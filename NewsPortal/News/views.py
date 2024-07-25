@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from .filters import PostFilter
 from .models import Post
-from .forms import NewsForm, ArticlesForm
+from .forms import NewsForm
 
 class PostsList(ListView):
     model = Post
@@ -42,7 +42,7 @@ class PostsSearch(ListView):
         return context
 
 
-class NewsCreate(CreateView):
+class PostCreate(CreateView):
     form_class = NewsForm
     model = Post
     template_name = 'post_edit.html'
@@ -50,29 +50,13 @@ class NewsCreate(CreateView):
     def form_valid(self, form):
         post = form.save(commit=False)
         post.quantity = 13
+        if self.request.path == "/news/articles/create/": post.post_type = "AR"
+        post.save()
         return super().form_valid(form)
-        if self.request.path == "/news/create/": post.type = "NV"
 
 
-class ArticlesCreate(CreateView):
-    form_class = ArticlesForm
-    model = Post
-    template_name = 'arpost_edit.html'
-
-    def form_valid(self, form):
-        post = form.save(commit=False)
-        post.quantity = 13
-        return super().form_valid(form)
-        if self.request.path == "/articles/create/":post.type = "AR"
-
-
-class NewsDelete(DeleteView):
+class PostDelete(DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('post_list')
 
-
-class ArticlesDelete(DeleteView):
-    model = Post
-    template_name = 'post_delete.html'
-    success_url = reverse_lazy('post_list')
