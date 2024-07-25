@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-
-from .resources import POST_TYPES, news
 from django.db.models import Sum
 
 
@@ -33,13 +31,20 @@ class Category (models.Model):
 
 
 class Post (models.Model):
-    author = models.ForeignKey (Author, on_delete=models.CASCADE)
-    post_type = models.CharField (max_length=2, choices=POST_TYPES, default=news)
+    news = "NV"
+    articles = "AR"
+
+    POST_TYPES = [
+        (news, 'Новость'),
+        (articles, 'Статья')
+    ]
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post_type = models.CharField(max_length=2, choices=POST_TYPES, default=news)
     date_in = models.DateTimeField(auto_now_add=True)
-    category = models.ManyToManyField (Category, through="PostCategory")
-    title = models.CharField (max_length=90)
+    category = models.ManyToManyField(Category, through="PostCategory")
+    title = models.CharField(max_length=90)
     text = models.TextField()
-    rating = models.IntegerField (default=0)
+    rating = models.IntegerField(default=0)
 
     def like(self):
         self.rating += 1
